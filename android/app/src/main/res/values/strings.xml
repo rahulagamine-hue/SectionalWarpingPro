@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Sectional Warping Pro</string>
+    <string name="title_activity_main">Sectional Warping Pro</string>
+    <string name="package_name">com.sectionalwarping.pro</string>
+    <string name="custom_url_scheme">com.sectionalwarping.pro</string>
+</resources>
