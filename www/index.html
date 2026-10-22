@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#14532d">
 <meta name="description" content="Sectional Warping Pro textile calculation app">
 <title>Sectional Warping Pro</title>
+
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,"Noto Sans Bengali",sans-serif;background:#f0fdf4;color:#14532d}
@@ -30,85 +31,357 @@ body[dir="rtl"] input,body[dir="rtl"] select{text-align:right}
 body[dir="rtl"] .menu button{text-align:right}
 </style>
 </head>
+
 <body>
 <header>
 <h1>Sectional Warping Pro</h1>
 <select id="lang" onchange="changeLanguage()">
-<option value="bn">🇧🇩 বাংলা</option><option value="en">🇬🇧 English</option><option value="ur">🇵🇰 اردو</option><option value="hi">🇮🇳 हिन्दी</option><option value="ar">🇸🇦 العربية</option>
+<option value="bn">🇧🇩 বাংলা</option>
+<option value="en">🇬🇧 English</option>
+<option value="ur">🇵🇰 اردو</option>
+<option value="hi">🇮🇳 हिन्दी</option>
+<option value="ar">🇸🇦 العربية</option>
 </select>
 </header>
+
 <main>
 <section id="home" class="card menu">
 <h2 id="menuTitle"></h2>
-<button onclick="openPage('kg')" id="menuKg"></button><button onclick="openPage('meter')" id="menuMeter"></button><button onclick="openPage('total')" id="menuTotal"></button><button onclick="openPage('reed')" id="menuReed"></button><button onclick="openPage('section')" id="menuSection"></button><button onclick="openPage('sectionWidth')" id="menuSectionWidth"></button>
+<button onclick="openPage('kg')" id="menuKg"></button>
+<button onclick="openPage('meter')" id="menuMeter"></button>
+<button onclick="openPage('total')" id="menuTotal"></button>
+<button onclick="openPage('reed')" id="menuReed"></button>
+<button onclick="openPage('section')" id="menuSection"></button>
+<button onclick="openPage('sectionWidth')" id="menuSectionWidth"></button>
 </section>
+
 <section id="calculator" class="card hidden">
 <h2 id="pageTitle"></h2>
-<div id="countGroup"><label id="countLabel"></label><input id="count" type="number" min="0" step="any" placeholder="30"><label id="systemLabel"></label><select id="system"><option value="Ne">Ne — English Count</option><option value="Nm">Nm — Metric Count</option><option value="Tex">Tex</option></select></div>
-<div id="quantityGroup"><label id="quantityLabel"></label><input id="quantity" type="number" min="0" step="any"></div>
+
+<div id="countGroup">
+<label id="countLabel"></label>
+<input id="count" type="number" min="0" step="any" placeholder="30">
+
+<label id="systemLabel"></label>
+<select id="system">
+<option value="Ne">Ne — English Count</option>
+<option value="Nm">Nm — Metric Count</option>
+<option value="Tex">Tex</option>
+</select>
+</div>
+
+<div id="quantityGroup">
+<label id="quantityLabel"></label>
+<input id="quantity" type="number" min="0" step="any">
+</div>
+
 <div id="extraFields"></div>
-<button type="button" class="action" id="calcButton" onclick="calculate()"></button><div id="result" class="hidden" aria-live="polite"></div><button type="button" class="home" id="homeButton" onclick="goHome()"></button>
+<button type="button" class="action" id="calcButton" onclick="calculate()"></button>
+<div id="result" class="hidden" aria-live="polite"></div>
+<button type="button" class="home" id="homeButton" onclick="goHome()"></button>
 </section>
+
 <p class="small" id="notice"></p>
 </main>
+
 <footer>Sectional Warping Pro</footer>
+
 <script>
 const translations = {
-bn:{menu:"হিসাবের অপশন নির্বাচন করুন",kg:"১. কেজি থেকে মিটার",meter:"২. মিটার থেকে কেজি",total:"৩. মোট সুতার ওজন (KG)",reed:"৪. রিড ভরার হিসাব",section:"৫. সেকশন হিসাব",sectionWidth:"৬. সেকশনের প্রস্থ হিসাব",titles:{kg:"কেজি থেকে মিটার",meter:"মিটার থেকে কেজি",total:"মোট সুতার ওজন",reed:"রিড ভরার হিসাব",section:"সেকশন হিসাব",sectionWidth:"সেকশনের প্রস্থ হিসাব"},count:"সুতার কাউন্ট",system:"কাউন্ট পদ্ধতি",weight:"ওজন (কেজি)",length:"দৈর্ঘ্য (মিটার)",ends:"মোট সুতা (Total Ends)",beamWidth:"বিমের প্রস্থ (ইঞ্চি)",reedRate:"প্রতি ইঞ্চিতে রিড ডেন্ট (Reed Rate)",creelEnds:"ক্রিলে সুতা (Creel Ends)",totalCreel:"মোট ক্রিল / প্রতি সেকশনে সুতা",sectionWidthInches:"সেকশনের প্রস্থ (ইঞ্চি)",sectionWidthMm:"সেকশনের প্রস্থ (মিলিমিটার)",calculate:"হিসাব করুন",home:"⌂ হোমে ফিরে যান",result:"ফলাফল",invalid:"সঠিক ধনাত্মক সংখ্যা লিখুন।",notice:"নোট: উৎপাদনের কাজে ব্যবহারের আগে কারখানার নিয়ম অনুযায়ী হিসাব যাচাই করুন।",totalLength:"মোট দৈর্ঘ্য",estimatedWeight:"মোট ওজন",endsPerInch:"প্রতি ইঞ্চিতে সুতা",dentsPerInch:"প্রতি ইঞ্চিতে ডেন্ট",endsPerDent:"প্রতি ডেন্টে সুতা",totalSections:"মোট সেকশন",fullSections:"পূর্ণ সেকশন",lastSection:"শেষ সেকশনে সুতা",eachFull:"প্রতি পূর্ণ সেকশনে সুতা",wholeEnds:"মোট সুতার সংখ্যা পূর্ণ সংখ্যা হতে হবে।"},
-en:{menu:"Select a Calculator",kg:"1. KG to Meter",meter:"2. Meter to KG",total:"3. Total Yarn Weight (KG)",reed:"4. Reed Calculation",section:"5. Section Calculator",sectionWidth:"6. Section Width Calculator",titles:{kg:"Kilogram to Meter",meter:"Meter to Kilogram",total:"Total Yarn Weight",reed:"Reed Calculation",section:"Section Calculator",sectionWidth:"Section Width Calculator"},count:"Yarn Count",system:"Count System",weight:"Weight (kg)",length:"Length (meter)",ends:"Total Ends",beamWidth:"Beam Width (inches)",reedRate:"Reed Rate (dents per inch)",creelEnds:"Creel Ends",totalCreel:"Total Creel / Ends per Section",sectionWidthInches:"Section Width (inches)",sectionWidthMm:"Section Width (millimeters)",calculate:"Calculate",home:"⌂ Back to Home",result:"Result",invalid:"Enter valid positive numbers.",notice:"Verify calculations with your factory procedure before production use.",totalLength:"Total Length",estimatedWeight:"Total Weight",endsPerInch:"Ends per Inch",dentsPerInch:"Dents per Inch",endsPerDent:"Ends per Dent",totalSections:"Total Sections",fullSections:"Full Sections",lastSection:"Ends in Last Section",eachFull:"Ends in Each Full Section",wholeEnds:"Total Ends must be a whole number."},
-ur:{menu:"حساب کا انتخاب کریں",kg:"۱۔ کلوگرام سے میٹر",meter:"۲۔ میٹر سے کلوگرام",total:"۳۔ دھاگے کا کل وزن (KG)",reed:"۴۔ ریڈ کا حساب",section:"۵۔ سیکشن کا حساب",sectionWidth:"۶۔ سیکشن کی چوڑائی کا حساب",titles:{kg:"کلوگرام سے میٹر",meter:"میٹر سے کلوگرام",total:"دھاگے کا کل وزن",reed:"ریڈ کا حساب",section:"سیکشن کا حساب",sectionWidth:"سیکشن کی چوڑائی کا حساب"},count:"دھاگے کا کاؤنٹ",system:"کاؤنٹ کا نظام",weight:"وزن (کلوگرام)",length:"لمبائی (میٹر)",ends:"دھاگے کے کل سرے",beamWidth:"بیم کی چوڑائی (انچ)",reedRate:"فی انچ ریڈ ڈینٹ",creelEnds:"کریل میں دھاگے",totalCreel:"کل کریل / ہر سیکشن کے دھاگے",sectionWidthInches:"سیکشن کی چوڑائی (انچ)",sectionWidthMm:"سیکشن کی چوڑائی (ملی میٹر)",calculate:"حساب کریں",home:"⌂ ہوم پر واپس جائیں",result:"نتیجہ",invalid:"درست مثبت اعداد درج کریں۔",notice:"پیداوار سے پہلے فیکٹری کے طریقۂ کار سے حساب کی تصدیق کریں۔",totalLength:"کل لمبائی",estimatedWeight:"کل وزن",endsPerInch:"فی انچ دھاگے",dentsPerInch:"فی انچ ڈینٹ",endsPerDent:"ہر ڈینٹ میں سرے",totalSections:"کل سیکشن",fullSections:"مکمل سیکشن",lastSection:"آخری سیکشن میں دھاگے",eachFull:"ہر مکمل سیکشن میں دھاگے",wholeEnds:"کل سروں کی تعداد مکمل عدد ہونی چاہیے۔"},
-hi:{menu:"कैलकुलेटर चुनें",kg:"१. किलोग्राम से मीटर",meter:"२. मीटर से किलोग्राम",total:"३. कुल धागे का वजन (KG)",reed:"४. रीड की गणना",section:"५. सेक्शन की गणना",sectionWidth:"६. सेक्शन की चौड़ाई की गणना",titles:{kg:"किलोग्राम से मीटर",meter:"मीटर से किलोग्राम",total:"कुल धागे का वजन",reed:"रीड की गणना",section:"सेक्शन की गणना",sectionWidth:"सेक्शन की चौड़ाई की गणना"},count:"धागे का काउंट",system:"काउंट प्रणाली",weight:"वजन (किलोग्राम)",length:"लंबाई (मीटर)",ends:"धागे के कुल सिरे",beamWidth:"बीम की चौड़ाई (इंच)",reedRate:"प्रति इंच रीड डेंट",creelEnds:"क्रील में धागे",totalCreel:"कुल क्रील / प्रति सेक्शन धागे",sectionWidthInches:"सेक्शन की चौड़ाई (इंच)",sectionWidthMm:"सेक्शन की चौड़ाई (मिलीमीटर)",calculate:"गणना करें",home:"⌂ होम पर वापस जाएँ",result:"परिणाम",invalid:"सही धनात्मक संख्या दर्ज करें।",notice:"उत्पादन से पहले फैक्ट्री की प्रक्रिया के अनुसार गणना की जाँच करें।",totalLength:"कुल लंबाई",estimatedWeight:"कुल वजन",endsPerInch:"प्रति इंच धागे",dentsPerInch:"प्रति इंच डेंट",endsPerDent:"प्रति डेंट सिरे",totalSections:"कुल सेक्शन",fullSections:"पूर्ण सेक्शन",lastSection:"अंतिम सेक्शन में धागे",eachFull:"प्रत्येक पूर्ण सेक्शन में धागे",wholeEnds:"कुल सिरों की संख्या पूर्णांक होनी चाहिए।"},
-ar:{menu:"اختر آلة حاسبة",kg:"١. من الكيلوغرام إلى المتر",meter:"٢. من المتر إلى الكيلوغرام",total:"٣. الوزن الإجمالي للخيوط (KG)",reed:"٤. حساب المشط",section:"٥. حساب الأقسام",sectionWidth:"٦. حساب عرض القسم",titles:{kg:"من الكيلوغرام إلى المتر",meter:"من المتر إلى الكيلوغرام",total:"الوزن الإجمالي للخيوط",reed:"حساب المشط",section:"حساب الأقسام",sectionWidth:"حساب عرض القسم"},count:"نمرة الخيط",system:"نظام النمرة",weight:"الوزن (كغ)",length:"الطول (متر)",ends:"إجمالي أطراف الخيوط",beamWidth:"عرض البكرة (بالبوصة)",reedRate:"عدد فتحات المشط لكل بوصة",creelEnds:"الخيوط على الكريل",totalCreel:"إجمالي الكريل / خيوط كل قسم",sectionWidthInches:"عرض القسم (بالبوصة)",sectionWidthMm:"عرض القسم (ملليمتر)",calculate:"احسب",home:"⌂ العودة إلى الرئيسية",result:"النتيجة",invalid:"أدخل أرقاماً موجبة وصحيحة.",notice:"تحقق من الحسابات وفق إجراءات المصنع قبل استخدامها في الإنتاج.",totalLength:"الطول الإجمالي",estimatedWeight:"الوزن الإجمالي",endsPerInch:"الأطراف لكل بوصة",dentsPerInch:"فتحات المشط لكل بوصة",endsPerDent:"الأطراف لكل فتحة",totalSections:"إجمالي الأقسام",fullSections:"الأقسام الكاملة",lastSection:"الأطراف في القسم الأخير",eachFull:"الأطراف في كل قسم كامل",wholeEnds:"يجب أن يكون إجمالي الأطراف عدداً صحيحاً."}
+bn:{
+menu:"হিসাবের অপশন নির্বাচন করুন",
+kg:"১. কেজি থেকে মিটার",
+meter:"২. মিটার থেকে কেজি",
+total:"৩. মোট সুতার ওজন (KG)",
+reed:"৪. রিড ভরার হিসাব",
+section:"৫. সেকশন হিসাব",
+sectionWidth:"৬. সেকশনের প্রস্থ হিসাব",
+titles:{kg:"কেজি থেকে মিটার",meter:"মিটার থেকে কেজি",total:"মোট সুতার ওজন",reed:"রিড ভরার হিসাব",section:"সেকশন হিসাব",sectionWidth:"সেকশনের প্রস্থ হিসাব"},
+count:"সুতার কাউন্ট",system:"কাউন্ট পদ্ধতি",weight:"ওজন (কেজি)",length:"দৈর্ঘ্য (মিটার)",
+ends:"মোট সুতা (Total Ends)",beamWidth:"বিমের প্রস্থ (ইঞ্চি)",
+reedRate:"প্রতি ইঞ্চিতে রিড ডেন্ট (Reed Rate)",creelEnds:"ক্রিলে সুতা (Creel Ends)",
+totalCreel:"মোট ক্রিল / প্রতি সেকশনে সুতা",
+sectionWidthInches:"সেকশনের প্রস্থ (ইঞ্চি)",sectionWidthMm:"সেকশনের প্রস্থ (মিলিমিটার)",
+calculate:"হিসাব করুন",home:"⌂ হোমে ফিরে যান",result:"ফলাফল",
+invalid:"সঠিক ধনাত্মক সংখ্যা লিখুন।",
+notice:"নোট: উৎপাদনের কাজে ব্যবহারের আগে কারখানার নিয়ম অনুযায়ী হিসাব যাচাই করুন।",
+totalLength:"মোট দৈর্ঘ্য",estimatedWeight:"মোট ওজন",endsPerInch:"প্রতি ইঞ্চিতে সুতা",
+dentsPerInch:"প্রতি ইঞ্চিতে ডেন্ট",endsPerDent:"প্রতি ডেন্টে সুতা",
+totalSections:"মোট সেকশন",fullSections:"পূর্ণ সেকশন",lastSection:"শেষ সেকশনে সুতা",
+eachFull:"প্রতি পূর্ণ সেকশনে সুতা",wholeEnds:"মোট সুতার সংখ্যা পূর্ণ সংখ্যা হতে হবে।"
+},
+en:{
+menu:"Select a Calculator",kg:"1. KG to Meter",meter:"2. Meter to KG",
+total:"3. Total Yarn Weight (KG)",reed:"4. Reed Calculation",
+section:"5. Section Calculator",sectionWidth:"6. Section Width Calculator",
+titles:{kg:"Kilogram to Meter",meter:"Meter to Kilogram",total:"Total Yarn Weight",reed:"Reed Calculation",section:"Section Calculator",sectionWidth:"Section Width Calculator"},
+count:"Yarn Count",system:"Count System",weight:"Weight (kg)",length:"Length (meter)",
+ends:"Total Ends",beamWidth:"Beam Width (inches)",reedRate:"Reed Rate (dents per inch)",
+creelEnds:"Creel Ends",totalCreel:"Total Creel / Ends per Section",
+sectionWidthInches:"Section Width (inches)",sectionWidthMm:"Section Width (millimeters)",
+calculate:"Calculate",home:"⌂ Back to Home",result:"Result",
+invalid:"Enter valid positive numbers.",
+notice:"Verify calculations with your factory procedure before production use.",
+totalLength:"Total Length",estimatedWeight:"Total Weight",endsPerInch:"Ends per Inch",
+dentsPerInch:"Dents per Inch",endsPerDent:"Ends per Dent",
+totalSections:"Total Sections",fullSections:"Full Sections",lastSection:"Ends in Last Section",
+eachFull:"Ends in Each Full Section",wholeEnds:"Total Ends must be a whole number."
+},
+ur:{
+menu:"حساب کا انتخاب کریں",kg:"۱۔ کلوگرام سے میٹر",meter:"۲۔ میٹر سے کلوگرام",
+total:"۳۔ دھاگے کا کل وزن (KG)",reed:"۴۔ ریڈ کا حساب",section:"۵۔ سیکشن کا حساب",
+sectionWidth:"۶۔ سیکشن کی چوڑائی کا حساب",
+titles:{kg:"کلوگرام سے میٹر",meter:"میٹر سے کلوگرام",total:"دھاگے کا کل وزن",reed:"ریڈ کا حساب",section:"سیکشن کا حساب",sectionWidth:"سیکشن کی چوڑائی کا حساب"},
+count:"دھاگے کا کاؤنٹ",system:"کاؤنٹ کا نظام",weight:"وزن (کلوگرام)",length:"لمبائی (میٹر)",
+ends:"دھاگے کے کل سرے",beamWidth:"بیم کی چوڑائی (انچ)",reedRate:"فی انچ ریڈ ڈینٹ",
+creelEnds:"کریل میں دھاگے",totalCreel:"کل کریل / ہر سیکشن کے دھاگے",
+sectionWidthInches:"سیکشن کی چوڑائی (انچ)",sectionWidthMm:"سیکشن کی چوڑائی (ملی میٹر)",
+calculate:"حساب کریں",home:"⌂ ہوم پر واپس جائیں",result:"نتیجہ",
+invalid:"درست مثبت اعداد درج کریں۔",notice:"پیداوار سے پہلے فیکٹری کے طریقۂ کار سے حساب کی تصدیق کریں۔",
+totalLength:"کل لمبائی",estimatedWeight:"کل وزن",endsPerInch:"فی انچ دھاگے",
+dentsPerInch:"فی انچ ڈینٹ",endsPerDent:"ہر ڈینٹ میں سرے",totalSections:"کل سیکشن",
+fullSections:"مکمل سیکشن",lastSection:"آخری سیکشن میں دھاگے",
+eachFull:"ہر مکمل سیکشن میں دھاگے",wholeEnds:"کل سروں کی تعداد مکمل عدد ہونی چاہیے۔"
+},
+hi:{
+menu:"कैलकुलेटर चुनें",kg:"१. किलोग्राम से मीटर",meter:"२. मीटर से किलोग्राम",
+total:"३. कुल धागे का वजन (KG)",reed:"४. रीड की गणना",section:"५. सेक्शन की गणना",
+sectionWidth:"६. सेक्शन की चौड़ाई की गणना",
+titles:{kg:"किलोग्राम से मीटर",meter:"मीटर से किलोग्राम",total:"कुल धागे का वजन",reed:"रीड की गणना",section:"सेक्शन की गणना",sectionWidth:"सेक्शन की चौड़ाई की गणना"},
+count:"धागे का काउंट",system:"काउंट प्रणाली",weight:"वजन (किलोग्राम)",length:"लंबाई (मीटर)",
+ends:"धागे के कुल सिरे",beamWidth:"बीम की चौड़ाई (इंच)",reedRate:"प्रति इंच रीड डेंट",
+creelEnds:"क्रील में धागे",totalCreel:"कुल क्रील / प्रति सेक्शन धागे",
+sectionWidthInches:"सेक्शन की चौड़ाई (इंच)",sectionWidthMm:"सेक्शन की चौड़ाई (मिलीमीटर)",
+calculate:"गणना करें",home:"⌂ होम पर वापस जाएँ",result:"परिणाम",
+invalid:"सही धनात्मक संख्या दर्ज करें।",notice:"उत्पादन से पहले फैक्ट्री की प्रक्रिया के अनुसार गणना की जाँच करें।",
+totalLength:"कुल लंबाई",estimatedWeight:"कुल वजन",endsPerInch:"प्रति इंच धागे",
+dentsPerInch:"प्रति इंच डेंट",endsPerDent:"प्रति डेंट सिरे",totalSections:"कुल सेक्शन",
+fullSections:"पूर्ण सेक्शन",lastSection:"अंतिम सेक्शन में धागे",
+eachFull:"प्रत्येक पूर्ण सेक्शन में धागे",wholeEnds:"कुल सिरों की संख्या पूर्णांक होनी चाहिए।"
+},
+ar:{
+menu:"اختر آلة حاسبة",kg:"١. من الكيلوغرام إلى المتر",meter:"٢. من المتر إلى الكيلوغرام",
+total:"٣. الوزن الإجمالي للخيوط (KG)",reed:"٤. حساب المشط",section:"٥. حساب الأقسام",
+sectionWidth:"٦. حساب عرض القسم",
+titles:{kg:"من الكيلوغرام إلى المتر",meter:"من المتر إلى الكيلوغرام",total:"الوزن الإجمالي للخيوط",reed:"حساب المشط",section:"حساب الأقسام",sectionWidth:"حساب عرض القسم"},
+count:"نمرة الخيط",system:"نظام النمرة",weight:"الوزن (كغ)",length:"الطول (متر)",
+ends:"إجمالي أطراف الخيوط",beamWidth:"عرض البكرة (بالبوصة)",reedRate:"عدد فتحات المشط لكل بوصة",
+creelEnds:"الخيوط على الكريل",totalCreel:"إجمالي الكريل / خيوط كل قسم",
+sectionWidthInches:"عرض القسم (بالبوصة)",sectionWidthMm:"عرض القسم (ملليمتر)",
+calculate:"احسب",home:"⌂ العودة إلى الرئيسية",result:"النتيجة",
+invalid:"أدخل أرقاماً موجبة وصحيحة.",notice:"تحقق من الحسابات وفق إجراءات المصنع قبل استخدامها في الإنتاج.",
+totalLength:"الطول الإجمالي",estimatedWeight:"الوزن الإجمالي",endsPerInch:"الأطراف لكل بوصة",
+dentsPerInch:"فتحات المشط لكل بوصة",endsPerDent:"الأطراف لكل فتحة",
+totalSections:"إجمالي الأقسام",fullSections:"الأقسام الكاملة",lastSection:"الأطراف في القسم الأخير",
+eachFull:"الأطراف في كل قسم كامل",wholeEnds:"يجب أن يكون إجمالي الأطراف عدداً صحيحاً."
+}
 };
+
 let currentPage="";
-function t(key){return translations[document.getElementById("lang").value][key];}
-function formatNumber(value,digits=3){return value.toLocaleString("en-US",{maximumFractionDigits:digits});}
+
+function t(key){
+ return translations[document.getElementById("lang").value][key];
+}
+
+function formatNumber(value,digits=3){
+ return value.toLocaleString("en-US",{maximumFractionDigits:digits});
+}
+
 function changeLanguage(){
- const lang=document.getElementById("lang").value,rtl=lang==="ur"||lang==="ar";
- document.documentElement.lang=lang;document.documentElement.dir=rtl?"rtl":"ltr";document.body.dir=rtl?"rtl":"ltr";
- document.getElementById("menuTitle").textContent=t("menu");document.getElementById("menuKg").textContent=t("kg");document.getElementById("menuMeter").textContent=t("meter");document.getElementById("menuTotal").textContent=t("total");document.getElementById("menuReed").textContent=t("reed");document.getElementById("menuSection").textContent=t("section");document.getElementById("menuSectionWidth").textContent=t("sectionWidth");document.getElementById("countLabel").textContent=t("count");document.getElementById("systemLabel").textContent=t("system");document.getElementById("calcButton").textContent=t("calculate");document.getElementById("homeButton").textContent=t("home");document.getElementById("notice").textContent=t("notice");if(currentPage)openPage(currentPage);
+ const lang=document.getElementById("lang").value;
+ const rtl=lang==="ur"||lang==="ar";
+ document.documentElement.lang=lang;
+ document.documentElement.dir=rtl?"rtl":"ltr";
+ document.body.dir=rtl?"rtl":"ltr";
+
+ document.getElementById("menuTitle").textContent=t("menu");
+ document.getElementById("menuKg").textContent=t("kg");
+ document.getElementById("menuMeter").textContent=t("meter");
+ document.getElementById("menuTotal").textContent=t("total");
+ document.getElementById("menuReed").textContent=t("reed");
+ document.getElementById("menuSection").textContent=t("section");
+ document.getElementById("menuSectionWidth").textContent=t("sectionWidth");
+ document.getElementById("countLabel").textContent=t("count");
+ document.getElementById("systemLabel").textContent=t("system");
+ document.getElementById("calcButton").textContent=t("calculate");
+ document.getElementById("homeButton").textContent=t("home");
+ document.getElementById("notice").textContent=t("notice");
+ if(currentPage)openPage(currentPage);
 }
+
 function openPage(page){
- currentPage=page;document.getElementById("home").classList.add("hidden");document.getElementById("calculator").classList.remove("hidden");document.getElementById("pageTitle").textContent=translations[document.getElementById("lang").value].titles[page];
- const box=document.getElementById("result");box.classList.add("hidden");box.innerHTML="";
- const countGroup=document.getElementById("countGroup"),quantityGroup=document.getElementById("quantityGroup"),extra=document.getElementById("extraFields");
- countGroup.classList.remove("hidden");quantityGroup.classList.remove("hidden");extra.innerHTML="";document.getElementById("count").value="";document.getElementById("quantity").value="";
- if(page==="kg"){document.getElementById("quantityLabel").textContent=t("weight");document.getElementById("quantity").placeholder="25";}
- else if(page==="meter"){document.getElementById("quantityLabel").textContent=t("length");document.getElementById("quantity").placeholder="5000";}
- else if(page==="total"){document.getElementById("quantityLabel").textContent=t("length");document.getElementById("quantity").placeholder="1000";extra.innerHTML=`<label for="totalEnds">${t("ends")}</label><input id="totalEnds" type="number" min="1" step="1" placeholder="1200">`;}
- else if(page==="reed"){countGroup.classList.add("hidden");quantityGroup.classList.add("hidden");extra.innerHTML=`<label for="totalEnds">${t("ends")}</label><input id="totalEnds" type="number" min="1" step="1" placeholder="4800"><label for="beamWidth">${t("beamWidth")}</label><input id="beamWidth" type="number" min="0.01" step="any" placeholder="60"><label for="reedRate">${t("reedRate")}</label><input id="reedRate" type="number" min="0.01" step="any" placeholder="80">`;}
- else if(page==="section"){countGroup.classList.add("hidden");quantityGroup.classList.add("hidden");extra.innerHTML=`<label for="totalEnds">${t("ends")}</label><input id="totalEnds" type="number" min="1" step="1" placeholder="2300"><label for="creelEnds">${t("creelEnds")}</label><input id="creelEnds" type="number" min="1" step="1" placeholder="310">`;}
- else if(page==="sectionWidth"){countGroup.classList.add("hidden");quantityGroup.classList.add("hidden");extra.innerHTML=`<label for="beamWidth">${t("beamWidth")}</label><input id="beamWidth" type="number" min="0.01" step="any" placeholder="120"><label for="totalEnds">${t("ends")}</label><input id="totalEnds" type="number" min="1" step="1" placeholder="2400"><label for="totalCreel">${t("totalCreel")}</label><input id="totalCreel" type="number" min="1" step="1" placeholder="300">`;}
-}
-function goHome(){currentPage="";document.getElementById("calculator").classList.add("hidden");document.getElementById("home").classList.remove("hidden");const box=document.getElementById("result");box.classList.add("hidden");box.innerHTML="";}
-function metersPerKg(count,system){if(system==="Ne")return count*1693.4;if(system==="Nm")return count*1000;return 1000000/count;}
-function calculate(){
- const box=document.getElementById("result");let output="";
- if(["kg","meter","total"].includes(currentPage)){
-  const count=Number(document.getElementById("count").value),qty=Number(document.getElementById("quantity").value),system=document.getElementById("system").value;
-  if(!Number.isFinite(count)||!Number.isFinite(qty)||count<=0||qty<=0){alert(t("invalid"));return;}
-  const factor=metersPerKg(count,system);if(!Number.isFinite(factor)||factor<=0){alert(t("invalid"));return;}
-  if(currentPage==="kg")output=t("totalLength")+": "+formatNumber(qty*factor)+" m";
-  else if(currentPage==="meter")output=t("estimatedWeight")+": "+formatNumber(qty/factor)+" kg";
-  else{const ends=Number(document.getElementById("totalEnds").value);if(!Number.isInteger(ends)||ends<=0){alert(t("invalid"));return;}output=t("estimatedWeight")+": "+formatNumber((qty*ends)/factor)+" kg";}
- }else if(currentPage==="reed"){
-  const ends=Number(document.getElementById("totalEnds").value),beamWidth=Number(document.getElementById("beamWidth").value),reedRate=Number(document.getElementById("reedRate").value);
-  if(!Number.isInteger(ends)||ends<=0||!Number.isFinite(beamWidth)||beamWidth<=0||!Number.isFinite(reedRate)||reedRate<=0){alert(t("invalid"));return;}
-  const endsPerInch=ends/beamWidth,endsPerDent=endsPerInch/reedRate;
-  output=`<div class="result-row"><strong>${t("endsPerInch")}:</strong> ${formatNumber(endsPerInch,4)}</div><div class="result-row"><strong>${t("dentsPerInch")}:</strong> ${formatNumber(reedRate,4)}</div><div class="result-row"><strong>${t("endsPerDent")}:</strong> ${formatNumber(endsPerDent,4)}</div>`;
- }else if(currentPage==="section"){
-  const ends=Number(document.getElementById("totalEnds").value),creel=Number(document.getElementById("creelEnds").value);
-  if(!Number.isInteger(ends)||ends<=0||!Number.isInteger(creel)||creel<=0||creel>ends){alert(t("invalid"));return;}
-  const fullSections=Math.floor(ends/creel),remainingEnds=ends%creel,totalSections=Math.ceil(ends/creel),lastSectionEnds=remainingEnds===0?creel:remainingEnds;
-  output=`<div class="result-row"><strong>${t("ends")}:</strong> ${formatNumber(ends,0)}</div><div class="result-row"><strong>${t("creelEnds")}:</strong> ${formatNumber(creel,0)}</div><div class="result-row"><strong>${t("totalSections")}:</strong> ${formatNumber(totalSections,0)}</div><div class="result-row"><strong>${t("fullSections")}:</strong> ${formatNumber(fullSections,0)}</div><div class="result-row"><strong>${t("eachFull")}:</strong> ${formatNumber(creel,0)}</div><div class="result-row"><strong>${t("lastSection")}:</strong> ${formatNumber(lastSectionEnds,0)}</div>`;
- }else if(currentPage==="sectionWidth"){
-  const beamWidth=Number(document.getElementById("beamWidth").value),ends=Number(document.getElementById("totalEnds").value),totalCreel=Number(document.getElementById("totalCreel").value);
-  if(!Number.isFinite(beamWidth)||beamWidth<=0||!Number.isInteger(ends)||ends<=0||!Number.isInteger(totalCreel)||totalCreel<=0||totalCreel>ends){alert(t("invalid"));return;}
-  const widthInches=(beamWidth/ends)*totalCreel,widthMm=widthInches*25.4;
-  output=`<div class="result-row"><strong>${t("sectionWidthInches")}:</strong> ${formatNumber(widthInches,4)} in</div><div class="result-row"><strong>${t("sectionWidthMm")}:</strong> ${formatNumber(widthMm,3)} mm</div>`;
+ currentPage=page;
+ document.getElementById("home").classList.add("hidden");
+ document.getElementById("calculator").classList.remove("hidden");
+ document.getElementById("pageTitle").textContent=
+  translations[document.getElementById("lang").value].titles[page];
+
+ const box=document.getElementById("result");
+ box.classList.add("hidden");
+ box.innerHTML="";
+
+ const countGroup=document.getElementById("countGroup");
+ const quantityGroup=document.getElementById("quantityGroup");
+ const extra=document.getElementById("extraFields");
+
+ countGroup.classList.remove("hidden");
+ quantityGroup.classList.remove("hidden");
+ extra.innerHTML="";
+ document.getElementById("count").value="";
+ document.getElementById("quantity").value="";
+
+ if(page==="kg"){
+  document.getElementById("quantityLabel").textContent=t("weight");
+  document.getElementById("quantity").placeholder="25";
  }
- box.innerHTML="<strong>"+t("result")+"</strong><br>"+output;box.classList.remove("hidden");
+ else if(page==="meter"){
+  document.getElementById("quantityLabel").textContent=t("length");
+  document.getElementById("quantity").placeholder="5000";
+ }
+ else if(page==="total"){
+  document.getElementById("quantityLabel").textContent=t("length");
+  document.getElementById("quantity").placeholder="1000";
+  extra.innerHTML=`
+   <label for="totalEnds">${t("ends")}</label>
+   <input id="totalEnds" type="number" min="1" step="1" placeholder="1200">
+  `;
+ }
+ else if(page==="reed"){
+  countGroup.classList.add("hidden");
+  quantityGroup.classList.add("hidden");
+  extra.innerHTML=`
+   <label for="totalEnds">${t("ends")}</label>
+   <input id="totalEnds" type="number" min="1" step="1" placeholder="4800">
+   <label for="beamWidth">${t("beamWidth")}</label>
+   <input id="beamWidth" type="number" min="0.01" step="any" placeholder="60">
+   <label for="reedRate">${t("reedRate")}</label>
+   <input id="reedRate" type="number" min="0.01" step="any" placeholder="80">
+  `;
+ }
+ else if(page==="section"){
+  countGroup.classList.add("hidden");
+  quantityGroup.classList.add("hidden");
+  extra.innerHTML=`
+   <label for="totalEnds">${t("ends")}</label>
+   <input id="totalEnds" type="number" min="1" step="1" placeholder="2300">
+   <label for="creelEnds">${t("creelEnds")}</label>
+   <input id="creelEnds" type="number" min="1" step="1" placeholder="310">
+  `;
+ }
+ else if(page==="sectionWidth"){
+  countGroup.classList.add("hidden");
+  quantityGroup.classList.add("hidden");
+  extra.innerHTML=`
+   <label for="beamWidth">${t("beamWidth")}</label>
+   <input id="beamWidth" type="number" min="0.01" step="any" placeholder="120">
+   <label for="totalEnds">${t("ends")}</label>
+   <input id="totalEnds" type="number" min="1" step="1" placeholder="2400">
+   <label for="totalCreel">${t("totalCreel")}</label>
+   <input id="totalCreel" type="number" min="1" step="1" placeholder="300">
+  `;
+ }
 }
+
+function goHome(){
+ currentPage="";
+ document.getElementById("calculator").classList.add("hidden");
+ document.getElementById("home").classList.remove("hidden");
+ const box=document.getElementById("result");
+ box.classList.add("hidden");
+ box.innerHTML="";
+}
+
+function metersPerKg(count,system){
+ if(system==="Ne")return count*1693.4;
+ if(system==="Nm")return count*1000;
+ return 1000000/count;
+}
+
+function calculate(){
+ const box=document.getElementById("result");
+ let output="";
+
+ if(["kg","meter","total"].includes(currentPage)){
+  const count=Number(document.getElementById("count").value);
+  const qty=Number(document.getElementById("quantity").value);
+  const system=document.getElementById("system").value;
+
+  if(!Number.isFinite(count)||!Number.isFinite(qty)||count<=0||qty<=0){
+   alert(t("invalid"));return;
+  }
+
+  const factor=metersPerKg(count,system);
+  if(!Number.isFinite(factor)||factor<=0){alert(t("invalid"));return;}
+
+  if(currentPage==="kg"){
+   output=t("totalLength")+": "+formatNumber(qty*factor)+" m";
+  }else if(currentPage==="meter"){
+   output=t("estimatedWeight")+": "+formatNumber(qty/factor)+" kg";
+  }else{
+   const ends=Number(document.getElementById("totalEnds").value);
+   if(!Number.isInteger(ends)||ends<=0){alert(t("invalid"));return;}
+   const totalKg=(qty*ends)/factor;
+   output=t("estimatedWeight")+": "+formatNumber(totalKg)+" kg";
+  }
+ }
+ else if(currentPage==="reed"){
+  const ends=Number(document.getElementById("totalEnds").value);
+  const beamWidth=Number(document.getElementById("beamWidth").value);
+  const reedRate=Number(document.getElementById("reedRate").value);
+
+  if(!Number.isInteger(ends)||ends<=0||!Number.isFinite(beamWidth)||beamWidth<=0||
+     !Number.isFinite(reedRate)||reedRate<=0){alert(t("invalid"));return;}
+
+  const endsPerInch=ends/beamWidth;
+  const endsPerDent=endsPerInch/reedRate;
+  output=
+   `<div class="result-row"><strong>${t("endsPerInch")}:</strong> ${formatNumber(endsPerInch,4)}</div>`+
+   `<div class="result-row"><strong>${t("dentsPerInch")}:</strong> ${formatNumber(reedRate,4)}</div>`+
+   `<div class="result-row"><strong>${t("endsPerDent")}:</strong> ${formatNumber(endsPerDent,4)}</div>`;
+ }
+ else if(currentPage==="section"){
+  const ends=Number(document.getElementById("totalEnds").value);
+  const creel=Number(document.getElementById("creelEnds").value);
+
+  if(!Number.isInteger(ends)||ends<=0||!Number.isInteger(creel)||creel<=0||creel>ends){
+   alert(t("invalid"));return;
+  }
+
+  const fullSections=Math.floor(ends/creel);
+  const remainingEnds=ends%creel;
+  const totalSections=Math.ceil(ends/creel);
+  const lastSectionEnds=remainingEnds===0?creel:remainingEnds;
+
+  output=
+   `<div class="result-row"><strong>${t("ends")}:</strong> ${formatNumber(ends,0)}</div>`+
+   `<div class="result-row"><strong>${t("creelEnds")}:</strong> ${formatNumber(creel,0)}</div>`+
+   `<div class="result-row"><strong>${t("totalSections")}:</strong> ${formatNumber(totalSections,0)}</div>`+
+   `<div class="result-row"><strong>${t("fullSections")}:</strong> ${formatNumber(fullSections,0)}</div>`+
+   `<div class="result-row"><strong>${t("eachFull")}:</strong> ${formatNumber(creel,0)}</div>`+
+   `<div class="result-row"><strong>${t("lastSection")}:</strong> ${formatNumber(lastSectionEnds,0)}</div>`;
+ }
+ else if(currentPage==="sectionWidth"){
+  const beamWidth=Number(document.getElementById("beamWidth").value);
+  const ends=Number(document.getElementById("totalEnds").value);
+  const totalCreel=Number(document.getElementById("totalCreel").value);
+
+  if(!Number.isFinite(beamWidth)||beamWidth<=0||!Number.isInteger(ends)||ends<=0||
+     !Number.isInteger(totalCreel)||totalCreel<=0||totalCreel>ends){
+   alert(t("invalid"));return;
+  }
+
+  const widthInches=(beamWidth/ends)*totalCreel;
+  const widthMm=widthInches*25.4;
+
+  output=
+   `<div class="result-row"><strong>${t("sectionWidthInches")}:</strong> ${formatNumber(widthInches,4)} in</div>`+
+   `<div class="result-row"><strong>${t("sectionWidthMm")}:</strong> ${formatNumber(widthMm,3)} mm</div>`;
+ }
+
+ box.innerHTML="<strong>"+t("result")+"</strong><br>"+output;
+ box.classList.remove("hidden");
+}
+
 changeLanguage();
 </script>
 </body>
