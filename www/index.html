@@ -380,9 +380,11 @@ function calculate(){
 
  box.innerHTML="<strong>"+t("result")+"</strong><br>"+output;
  box.classList.remove("hidden");
+ if (window.maybeShowInterstitialAd) window.maybeShowInterstitialAd();
 }
 
 changeLanguage();
 </script>
+ <script src="admob.bundle.js"></script>
 </body>
 </html>
