@@ -1037,26 +1037,56 @@
       var interstitialTestId = "ca-app-pub-3940256099942544/1033173712";
       var interstitialReady = false;
       var calculationCount = 0;
+      var started = false;
+      function log(message, detail = "") {
+        console.log("[AdMob]", message, detail);
+      }
       async function loadInterstitial() {
         try {
-          await AdMob.prepareInterstitial({
+          const result = await AdMob.prepareInterstitial({
             adId: interstitialTestId,
             isTesting: true
           });
           interstitialReady = true;
+          log("Interstitial loaded", result);
         } catch (error) {
-          console.warn("Interstitial test ad failed to load:", error);
+          interstitialReady = false;
+          log("Interstitial load failed", error);
         }
       }
       async function startAdMob() {
-        if (Capacitor.getPlatform() !== "android") return;
+        if (started || Capacitor.getPlatform() !== "android") return;
+        started = true;
         try {
+          await AdMob.addListener(BannerAdPluginEvents.Loaded, () => {
+            log("Banner loaded successfully");
+          });
+          await AdMob.addListener(BannerAdPluginEvents.FailedToLoad, (error) => {
+            log("Banner load failed", error);
+          });
+          await AdMob.addListener(InterstitialAdPluginEvents.Loaded, (info) => {
+            interstitialReady = true;
+            log("Interstitial ready", info);
+          });
+          await AdMob.addListener(InterstitialAdPluginEvents.FailedToLoad, (error) => {
+            interstitialReady = false;
+            log("Interstitial load failed event", error);
+          });
+          await AdMob.addListener(InterstitialAdPluginEvents.FailedToShow, (error) => {
+            log("Interstitial show failed", error);
+          });
+          await AdMob.initialize();
+          log("SDK initialized");
           let consent = await AdMob.requestConsentInfo();
+          log("Consent information", consent);
           if (consent.isConsentFormAvailable && consent.status === AdmobConsentStatus.REQUIRED) {
             consent = await AdMob.showConsentForm();
+            log("Consent form completed", consent);
           }
-          if (!consent.canRequestAds) return;
-          await AdMob.initialize();
+          if (!consent.canRequestAds) {
+            log("Ads not requested: consent does not allow ad requests");
+            return;
+          }
           await AdMob.showBanner({
             adId: bannerTestId,
             adSize: BannerAdSize.ADAPTIVE_BANNER,
@@ -1064,10 +1094,10 @@
             margin: 0,
             isTesting: true
           });
+          log("Banner request sent");
           await loadInterstitial();
-          console.log("AdMob test ads initialized");
         } catch (error) {
-          console.warn("AdMob initialization failed:", error);
+          log("Initialization or ad request failed", error);
         }
       }
       window.maybeShowInterstitialAd = async function() {
@@ -1077,13 +1107,16 @@
         interstitialReady = false;
         try {
           await AdMob.showInterstitial();
+          log("Interstitial show request sent");
         } catch (error) {
-          console.warn("Interstitial test ad failed to show:", error);
-        } finally {
-          await loadInterstitial();
+          log("Interstitial show failed", error);
         }
       };
-      window.addEventListener("load", startAdMob);
+      if (document.readyState === "complete") {
+        startAdMob();
+      } else {
+        window.addEventListener("load", startAdMob, { once: true });
+      }
     }
   });
   require_admob();
